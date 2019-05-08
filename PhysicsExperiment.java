@@ -1,7 +1,7 @@
 /**
  * Physics Experiment
- * Author: Your Name and Carolyn Yao
- * Does this compile or finish running within 5 seconds? Y/N
+ * Author: Sihang Li and Carolyn Yao
+ * Does this compile or finish running within 5 seconds? Yes
  */
 
 /**
@@ -28,17 +28,48 @@ public class PhysicsExperiment {
    * @return scheduleTable: a table similar to the signUpTable where scheduleTable[X][Y] = 1 means
    *     student X is assigned to step Y in an optimal schedule
    */
-  public int[][] scheduleExperiments(
-    int numStudents,
-    int numSteps,
-    int[][] signUpTable
-  ) {
+  public int[][] scheduleExperiments(int numStudents, int numSteps, int[][] signUpTable) {
     // Your scheduleTable is initialized as all 0's so far. Your code will put 1's
     // in the table in the right places based on the return description
     int[][] scheduleTable = new int[numStudents + 1][numSteps + 1];
-
-    // Your code goes here
-
+    //Your code here
+    int currentStudent=1; //current student.
+    int currentStep=1; //current step.
+    int n= numSteps;  // n is the number of remaining steps.
+    while(n>0) {   	
+    	if(signUpTable[currentStudent][currentStep]==1) { //If current student signed up for current step, then current student is the local best choice.
+    		scheduleTable[currentStudent][currentStep]=1; //then schedule current student to current step. 
+    		currentStep++; //Move to the next step. 
+    		n--; //Decrease the number of remaining steps. 
+    	}
+    	else { //If current student did not sign up for current step, then find the student that has the most consecutive 1's
+    		if (currentStep<=numSteps) { //if there are still steps to be assigned...
+    			int [] numConsecutive = new int[numSteps]; //Stores the number of the consecutive 1's at index corresponding to student index. 
+    			int maxConsecutive=0; //Finds the maximum consecutive 1's among all students. 
+    			for(int i=1; i<signUpTable.length; i++) { 
+    				for(int j=currentStep; j<signUpTable[i].length; j++) { 
+    					if(signUpTable[i][j]==1) {
+    						numConsecutive[i]++; //increases the number of consecutive 1's for student i. 
+    					}
+    					else 
+    						break; //breaks if signUpTable[i][j]==0 
+    				}
+    					for (int k=0;k<numConsecutive.length;k++) {
+    					if(numConsecutive[k] > maxConsecutive) {
+    						maxConsecutive=numConsecutive[k]; //Finds the student with maximum consecutive 1's among students. 
+    						currentStudent=k; //k is the index of the student that has the most consecutive 1's (new local best solution), so update currentStudent with k. 
+    					}
+    				}
+    			}
+    		}
+    		else {
+    			if(currentStudent==numStudents) 
+    				currentStudent=1; //if we reached the last step and the last student but the schedule has not been filled, we go back to the first student again. 
+    			else
+    				currentStudent++; //If we reached the last step but did not the last student then just go to the next student. 
+    		}
+    	}
+    }
     return scheduleTable;
   }
 
